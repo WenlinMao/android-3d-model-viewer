@@ -19,9 +19,62 @@ The purpose of this application is to learn and share how to draw using OpenGLES
 News (12/08/2019)
 =================
 
-* New: Add support for glTF models
-* New: Enable multi-texture (currently up to 2)
+* New: Add partially support for glTF models
 
+Supported Feature for glTF Models
+==================
+> * Scene
+>   
+>   * [x]  choosing scenes
+> * Node
+>   
+>   * [x]  Transformations (matrix, TRS)
+>   * [x]  children
+>   * [x]  mesh
+>   * [ ]  camera 
+>       * currently only use a single camera and force the object at center for easier view
+>   * [ ]  skin
+>   * [ ]  weights
+> * Mesh
+>   
+>   * [x]  primitives
+>   * [ ]  weights
+> * Primitive
+>   
+>   * [x]  Attributes
+>     
+>     * [x]  positions, normals, tangents, 2 tex coord sets, 1 color set, joints, weights
+>     * [x]  all tex coord formats
+>     * [x]  TEX_COORD_1
+>     * [x]  all color formats
+>     * [x]  COLOR_0
+>   * [x]  Indices
+>   * [x]  No Indices (-> `glDrawArrays()`)
+>   * [x]  Material
+>   * Mode
+>     
+>     * [x]  Triangles
+>     * [x]  Others: Points, Lines, LineLoop, LineStrip, TriangleStrip, TriangleFan
+>   * [ ]  targets
+> * Material
+>   
+>   * [x]  pbrMetallicRoughness
+>     
+>     * [x]  base color (factor + texture)
+>     * [ ]  full PBR lighting
+>   * [ ]  normalTexture
+>   * [ ]  occlusionTexture
+>   * [x]  emissiveTexture  + emissiveFactor
+>   * [ ]  alphaMode + alphaCutoff*
+>     (works, but not always correct - transparency/depth sorting is missing)
+>   * [x]  doubleSided
+> * Texture
+>   
+>   * [x]  Sampler
+>   * [x]  Image
+>   * [x]  textureInfo (texCoord set index)
+> * [ ]  Animation
+> * [ ]  Skin
 
 Demo
 ====
@@ -108,7 +161,7 @@ You can install the application in either of these ways:
   * APK: [app-release.apk](app/build/outputs/apk/release/app-release.apk)
 
   With glTF support:
-  * Source code: clone the repository, compile with gradle and install with adb
+  * clone the repository, compile with gradle and install with adb
 
 ```
     export ANDROID_HOME=/home/$USER/Android/Sdk
@@ -116,6 +169,7 @@ You can install the application in either of these ways:
     adb install -r app/build/outputs/apk/app-debug.apk
     adb shell am start -n org.andresoviedo.dddmodel2/org.andresoviedo.app.model3D.MainActivity
 ```
+* clone the repository, build and run with android studio
 
 Open the application. You should see a menu. From there you can load models
 Once the model is rendered, pinch and rotate to see the 3D scene from another perspective.

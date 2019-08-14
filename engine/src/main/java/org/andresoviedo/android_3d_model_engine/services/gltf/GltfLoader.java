@@ -7,6 +7,7 @@ import android.util.Log;
 import org.andresoviedo.android_3d_model_engine.model.AnimatedModel;
 import org.andresoviedo.android_3d_model_engine.model.Object3DData;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.AccessorModel;
+import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.AnimationModel;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.BufferModel;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.BufferViewModel;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.GltfModel;
@@ -45,6 +46,8 @@ public class GltfLoader {
                                             , "emissiveTexture"
                                             , "occlusionTexture"
                                             , "normalTexture"};
+
+    private  static Map<NodeModel, List<AnimatedModel>> nodeMap = new HashMap<>();
 
     // read model data and fill in data in Object3DData structure
     public static Object[] buildAnimatedModel(URI uri) throws IOException{
@@ -182,6 +185,13 @@ public class GltfLoader {
                 data3D.setDimensions(modelDimensions);
 
                 ret.add(data3D);
+                // add Object3DData correspond with node for adding animation in
+                // populatedAnimatedModel
+                if (!nodeMap.containsKey(node)){
+                    List<AnimatedModel> data3dList = new ArrayList<>();
+                    nodeMap.put(node, data3dList);
+                }
+                nodeMap.get(node).add(data3D);
             }
         }
 
@@ -200,17 +210,9 @@ public class GltfLoader {
         for (int i=0; i<datas.size(); i++) {
             Object3DData data = datas.get(i);
 
-            // Parse all facets...
-//            double[] normal = new double[3];
-//            double[][] vertices = new double[3][3];
-//            int normalCounter = 0, vertexCounter = 0;
-
             FloatBuffer normalsBuffer = data.getVertexNormalsArrayBuffer();
             FloatBuffer vertexBuffer = data.getVertexArrayBuffer();
             Buffer indexBuffer = data.getDrawOrderBuffer();
-
-//            vertexBuffer.put(data.getVertices());
-//            normalsBuffer.put(data.getNormals());
 
             WavefrontLoader.ModelDimensions modelDimensions = data.getDimensions();
 
@@ -227,62 +229,27 @@ public class GltfLoader {
             }
 
             bindTexture(data, modelData);
-//            Log.i("ColladaLoaderTask", "Building 3D object '"+meshData.getId()+"'...");
-//            data.setId(meshData.getId());
-//            vertexBuffer.put(meshData.getVertices());
-//            normalsBuffer.put(meshData.getNormals());
-
-//            indexBuffer.put(meshData.getIndices());
             data.setFaces(new WavefrontLoader.Faces(vertexBuffer.capacity() / 3));
             data.setDrawOrder(indexBuffer);
-
-//            data.setIsDoubleSided((Integer)1);
-
-            // Load skeleton and animation
-//            AnimatedModel data3D = (AnimatedModel) data;
-//            try {
-//
-//                // load skeleton
-//                SkeletonData skeletonData = modelData.getJointsData();
-//                Joint headJoint = createJoints(skeletonData.headJoint);
-//                data3D.setRootJoint(headJoint, skeletonData.jointCount, skeletonData.boneCount, false);
-//
-//                // load animation
-//                Animation animation = loadAnimation(url.openStream());
-//                data3D.doAnimation(animation);
-//
-//            } catch (Exception e) {
-//                Log.e("ColladaLoader", "Problem loading model animation' " + e.getMessage(), e);
-//                data3D.doAnimation(null);
-//            }
         }
-    }
 
-//    // TODO: consider replace function
-//    // different action for different attribute in mesh
-//    private static void bindKeyHandle()
-//    {
-//        // TODO: lambda function not working, research on how two parameter lambda function works
-////        keyHandleMap.put("POSITION", (buffer, obj) -> obj.setVertexBuffer(buffer));
-////        keyHandleMap.put("NORMAL", (buffer, obj) -> obj.setVertexNormalsArrayBuffer(buffer));
-////        keyHandleMap.put("TEXCOORD_0", (buffer, obj) -> obj.setTextureCoordsArrayBuffer(buffer));
-//
-//        keyHandleMap.put("POSITION", 1);
-//        keyHandleMap.put("NORMAL", 2);
-//        keyHandleMap.put("TEXCOORD_0", 3);
-//    }
+        // TODO: Iterate through all channels, map target's node and change all object3dData associated
+        // TODO: with that node's model matrix based on path, record the time since the object is
+        // TODO: rendered and calculate the interpolated value for each transformation
+//        for (AnimationModel animation : modelData.getAnimationModels()){
+//            for (AnimationModel.Channel channel : animation.getChannels()){
+//                List<AnimatedModel> data3DList = nodeMap.get(channel.getNodeModel());
+//                for (AnimatedModel data3D : data3DList){
+//                    data3D.doGltfAnimation(animation);
+//                }
+//            }
+//        }
+    }
 
 
     private static void bindTexture(Object3DData data, GltfModel gltfModel){
         List<TextureModel> textures = gltfModel.getTextureModels();
         Map<String,Object> materialValueMap = data.getGltfMaterial().getValues();
-
-//        for (String key : textureKeys){
-//            if (materialValueMap.get(key) != null){
-//                Integer index = (Integer)materialValueMap.get(key);
-//                String texCordKey = (String)materialValueMap.get(key);
-//            }
-//        }
 
         // Default Texture
         if (materialValueMap.get("baseColorTexture") != null){
@@ -300,7 +267,6 @@ public class GltfLoader {
             data.setTextureWrap(baseColorTexture.getWrapS(), baseColorTexture.getWrapT());
         }
 
-        // TODO: finish emissive texture logic
         // Emissive Texture
         if (materialValueMap.get("emissiveTexture") != null){
             Integer index = (Integer)materialValueMap.get("emissiveTexture");
@@ -323,7 +289,6 @@ public class GltfLoader {
         if (materialValueMap.get("normalTexture") != null){
 
         }
-        // TODO: set overall material color
         data.setColor((float[])materialValueMap.get("baseColorFactor"));
         data.setIsDoubleSided((Integer)materialValueMap.get("isDoubleSided"));
     }

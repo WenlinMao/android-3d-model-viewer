@@ -4,6 +4,7 @@ import android.opengl.Matrix;
 
 import org.andresoviedo.android_3d_model_engine.animation.Animation;
 import org.andresoviedo.android_3d_model_engine.services.collada.entities.Joint;
+import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.AnimationModel;
 
 import java.nio.FloatBuffer;
 
@@ -28,6 +29,7 @@ public class AnimatedModel extends Object3DData {
 	private FloatBuffer jointIds;
 	private FloatBuffer vertexWeigths;
 	private Animation animation;
+	private AnimationModel gltfAnimation = null;
 
 	// cache
 	private float[][] jointMatrices;
@@ -105,6 +107,15 @@ public class AnimatedModel extends Object3DData {
 
 	public Animation getAnimation(){
 		return animation;
+	}
+
+	public AnimatedModel doGltfAnimation(AnimationModel animation){
+		this.gltfAnimation = animation;
+		return this;
+	}
+
+	public AnimationModel getGltfAnimation(){
+		return gltfAnimation;
 	}
 
 	/**

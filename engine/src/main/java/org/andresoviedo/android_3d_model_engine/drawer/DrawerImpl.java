@@ -107,7 +107,6 @@ class DrawerImpl implements Object3D {
     public void draw(Object3DData obj, float[] pMatrix, float[] vMatrix, int drawMode, int drawSize, int textureId,
                      float[] lightPos, float[] colorMask) {
 
-        // Log.d("Object3DImpl", "Drawing '" + obj.getId() + "' using shader '" + id + "'...");
 
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);
@@ -127,8 +126,11 @@ class DrawerImpl implements Object3D {
 
         int mColorHandle = -1;
         if (supportsColors()) {
+            GLES20.glEnable(GLES20.GL_BLEND);
+            GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE);
             setColor(obj);
             mColorHandle = setColors(obj);
+            GLES20.glDisable(GLES20.GL_BLEND);
         } else {
             setColor(obj);
         }

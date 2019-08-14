@@ -505,6 +505,7 @@ public class Object3DData {
 		return this;
 	}
 
+	// TODO: change model matrix to be accumulated instead of set for only one time
 	private void updateModelMatrix(){
 		Matrix.setIdentityM(modelMatrix, 0);
 

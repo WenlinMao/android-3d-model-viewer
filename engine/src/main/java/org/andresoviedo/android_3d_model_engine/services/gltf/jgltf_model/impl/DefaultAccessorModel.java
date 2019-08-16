@@ -26,17 +26,27 @@
  */
 package org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.impl;
 
+import android.opengl.GLES20;
+
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.AccessorData;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.AccessorDatas;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.AccessorModel;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.Accessors;
+import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.BufferModel;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.BufferViewModel;
 import org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model.ElementType;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 /**
  * Implementation of an {@link AccessorModel}
  */
-public final class DefaultAccessorModel extends AbstractNamedModelElement
+public final class  DefaultAccessorModel extends AbstractNamedModelElement
     implements AccessorModel
 {
     /**
@@ -216,6 +226,92 @@ public final class DefaultAccessorModel extends AbstractNamedModelElement
             max = AccessorDatas.computeMax(getAccessorData());
         }
         return max.clone();
+    }
+
+    @Override
+    public Buffer getCorrBufferData(){
+        BufferViewModel bufferView = this.getBufferViewModel();
+        BufferModel buffer = bufferView.getBufferModel();
+        int size = this.getElementType().getNumComponents();
+        int count = this.getCount();
+        int type = this.getComponentType();
+        int offset = this.getByteOffset() + bufferView.getByteOffset();
+        int stride = this.getByteStride();
+        if(bufferView.getByteStride() != null) {
+            stride += bufferView.getByteStride();
+        }
+        int compSize = this.getComponentSizeInBytes();
+        int length = this.getCount() * size * compSize;
+        ByteBuffer bBuffer = buffer.getBufferData();
+        ByteBuffer tempbuf = ByteBuffer.allocateDirect(length).order(ByteOrder.nativeOrder());
+        byte[] byte2 = subBytes(bBuffer.array(),offset + 4,length);
+
+        Buffer retBuffer = null;
+
+        if (type == GLES20.GL_UNSIGNED_SHORT){
+            short[] ver = bytesToShort(byte2);
+            retBuffer = tempbuf.asShortBuffer();
+            ((ShortBuffer)retBuffer).put(ver);
+        } else if (type == GLES20.GL_UNSIGNED_INT) {
+            int[] ver = bytesToInt(byte2);
+            retBuffer = tempbuf.asIntBuffer();
+            ((IntBuffer)retBuffer).put(ver);
+        } else if (type == GLES20.GL_UNSIGNED_BYTE){
+            retBuffer = tempbuf;
+            ((ByteBuffer)retBuffer).put(byte2);
+        } else if (type == GLES20.GL_FLOAT){
+            float[] ver = byteToFloat(byte2);
+            retBuffer = tempbuf.asFloatBuffer();
+            ((FloatBuffer)retBuffer).put(ver);
+        }
+        retBuffer.position(0);
+
+        return retBuffer;
+    }
+
+    private static float byte2float(byte[] b, int index) {
+        int l;
+        l = b[index + 0];
+        l &= 0xff;
+        l |= ((long) b[index + 1] << 8);
+        l &= 0xffff;
+        l |= ((long) b[index + 2] << 16);
+        l &= 0xffffff;
+        l |= ((long) b[index + 3] << 24);
+        return Float.intBitsToFloat(l);
+    }
+
+    private static short[] bytesToShort(byte[] bytes) {
+        if(bytes==null){
+            return null;
+        }
+        short[] shorts = new short[bytes.length/2];
+        ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+        return shorts;
+    }
+
+    private static int[] bytesToInt(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
+        int[] ints = new int[bytes.length / 4];
+        ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(ints);
+        return ints;
+    }
+
+    private static float[] byteToFloat(byte[] input) {
+        float[] ret = new float[input.length/4];
+        for (int x = 0; x < input.length; x+=4) {
+//            ret[x/4] = ByteBuffer.wrap(input, x, 4).getFloat();
+            ret[x/4] = byte2float(input,x);
+        }
+        return ret;
+    }
+
+    private static byte[] subBytes(byte[] src, int offset, int count) {
+        byte[] bs = new byte[count];
+        for (int i=0;i<count; i++) bs[i] = src[i+offset];
+        return bs;
     }
     
 }

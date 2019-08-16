@@ -26,6 +26,8 @@
  */
 package org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model;
 
+import java.nio.Buffer;
+
 /**
  * Interface for a data accessor
  */
@@ -133,4 +135,11 @@ public interface AccessorModel extends NamedModelElement
      * @return The maximum components
      */
     Number[] getMax();
+
+    /**
+     * Return the corresponding Buffer data as a Buffer object
+     *
+     * @return The Buffer object contains the corresponding data in glTF Buffer
+     */
+    Buffer getCorrBufferData();
 }

@@ -107,9 +107,22 @@ public class GltfLoader {
                     // get accessor, bufferview, and buffer for vertex buffer, normal buffer
                     // texture coordinate buffer
                     AccessorModel accessor = attriMap.get(key);
-                    //TODO: ShortBuffer cannot be converted to FloatBuffer, try consider convert
-                    FloatBuffer dataFB = (FloatBuffer)accessor.getCorrBufferData();
 
+                    // TODO: add read of other types of buffer if needed
+                    Buffer dataB = accessor.getCorrBufferData();
+                    FloatBuffer dataFB = null;
+                    if (dataB instanceof FloatBuffer){
+                        dataFB = (FloatBuffer)dataB;
+                    } else if (dataB instanceof ShortBuffer){
+                        ShortBuffer dataSB = (ShortBuffer)dataB;
+                        short[] shortArr = new short[dataSB.capacity()];
+                        dataSB.get(shortArr);
+                        ByteBuffer bb = ByteBuffer.allocate(shortArr.length * 2);
+                        bb.asShortBuffer().put(shortArr);
+                        dataFB = bb.asFloatBuffer();
+                    }
+
+//                    FloatBuffer dataFB = accessor.getCorrBufferData();
                     if (key.equals("POSITION")){
                         transformVertices(data3D, node, dataFB);
                         data3D.setVertexArrayBuffer(dataFB);

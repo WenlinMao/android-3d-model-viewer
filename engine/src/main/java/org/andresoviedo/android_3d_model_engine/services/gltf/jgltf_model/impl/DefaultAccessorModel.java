@@ -252,18 +252,24 @@ public final class  DefaultAccessorModel extends AbstractNamedModelElement
             short[] ver = bytesToShort(byte2);
             retBuffer = tempbuf.asShortBuffer();
             ((ShortBuffer)retBuffer).put(ver);
+//            tempbuf.asShortBuffer().put(ver);
         } else if (type == GLES20.GL_UNSIGNED_INT) {
             int[] ver = bytesToInt(byte2);
             retBuffer = tempbuf.asIntBuffer();
             ((IntBuffer)retBuffer).put(ver);
+//            tempbuf.asIntBuffer().put(ver);
         } else if (type == GLES20.GL_UNSIGNED_BYTE){
             retBuffer = tempbuf;
             ((ByteBuffer)retBuffer).put(byte2);
+//            tempbuf.put(byte2);
         } else if (type == GLES20.GL_FLOAT){
             float[] ver = byteToFloat(byte2);
             retBuffer = tempbuf.asFloatBuffer();
             ((FloatBuffer)retBuffer).put(ver);
+//            float[] ver = byteToFloat(byte2);
+//            tempbuf.asFloatBuffer().put(ver);
         }
+//        tempbuf.position(0);
         retBuffer.position(0);
 
         return retBuffer;

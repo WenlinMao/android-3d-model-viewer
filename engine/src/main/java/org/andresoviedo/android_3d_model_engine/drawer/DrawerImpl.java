@@ -505,13 +505,6 @@ class DrawerImpl implements Object3D {
             drawBufferType = GLES20.GL_UNSIGNED_SHORT;
         }
 
-//        if (drawBufferType == GLES20.GL_UNSIGNED_SHORT){
-//            drawOrderBuffer = obj.getDrawOrderAsShort();
-//        }
-//
-//        if (drawBufferType == GLES20.GL_UNSIGNED_BYTE){
-//            drawOrderBuffer = obj.getDrawOrderAsByte();
-//        }
 
         if (obj.isDrawUsingArrays()) {
             drawOrderBuffer = null;

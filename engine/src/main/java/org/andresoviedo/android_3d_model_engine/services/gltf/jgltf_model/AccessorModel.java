@@ -27,7 +27,6 @@
 package org.andresoviedo.android_3d_model_engine.services.gltf.jgltf_model;
 
 import java.nio.Buffer;
-
 /**
  * Interface for a data accessor
  */

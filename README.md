@@ -4,11 +4,10 @@ Android 3D Model Viewer
 ![codeship badge](https://codeship.com/projects/52cf9560-deb2-0134-4203-2aaddef843aa/status?branch=master)
 
 This is a demo of OpenGL ES 2.0.
-It is basically an android application with a 3D engine that can load Wavefront OBJ, STL, DAE & glTF files.
-The application is based on andresoviedo's project which can be found [here](https://github.com/andresoviedo/android-3D-model-viewer).
+It is an android application with a 3D engine that can load Wavefront OBJ, STL, DAE & glTF files.
+The application is based on andresoviedo's project which can be found [here](https://github.com/andresoviedo/android-3D-model-viewer) with an additional function of loading glTF format.
 <br>
 The purpose of this application is to learn and share how to draw using OpenGLES and Android. The purpose for me to make a copy and edit on this project is to understand the difference between OBJ, STL, DAE, and glTF format. 
-
 
 * Wafefront format (OBJ): https://en.wikipedia.org/wiki/Wavefront_.obj_file
 * STereoLithography format (STL): https://en.wikipedia.org/wiki/STL_(file_format)

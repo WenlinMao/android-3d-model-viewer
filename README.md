@@ -78,7 +78,7 @@ Supported Feature for glTF Models
 Demo
 ====
 
-Checkout this to see the features of the application: https://www.youtube.com/watch?v=PV92DKohXXk
+Checkout this to see the features of the application: https://youtu.be/AB8fHq_CkpU
 
 
 Android Market

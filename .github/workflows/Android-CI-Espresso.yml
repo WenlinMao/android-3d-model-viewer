@@ -1,0 +1,42 @@
+name: Github CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: macOS-latest
+    strategy:
+      matrix:
+        java_version: [1.8]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Android SDK
+        uses: hannesa2/action-android/install-sdk@0.0.7.5
+      - name: Build project
+        run: ./gradlew assembleDebug
+      - name: Run tests
+        run: ./gradlew test
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Android SDK
+        uses: hannesa2/action-android/install-sdk@0.0.7.5
+      - name: Gradle checks
+        run: ./gradlew check
+      - name: Archive Lint report
+        uses: actions/upload-artifact@v2.1.4
+        if: ${{ always() }}
+        with:
+          name: 3D-Lint
+          path: ./**/build/reports/lint-results.html
